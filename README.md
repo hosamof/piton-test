@@ -19,4 +19,4 @@ Todo list:
 
 -------------
 Register Page:
-![Image](best_flutter_ui_templates/assets/introduction_animation/introduction_animation.png)
+![Image](screenshots/img1.png)
