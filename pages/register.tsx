@@ -1,12 +1,26 @@
+import { useRouter } from "next/router"
 import { useRef, useState } from "react"
+import { useSelector, useDispatch } from "react-redux"
+import { selectAuthState, setAuthState } from "../store/authSlice"
 import { Const } from "../utils/const"
 import { Funcs } from "../utils/funcs"
 
 export default function Register() {
+    // global state
+    const authState = useSelector(selectAuthState)
+    const dispatch = useDispatch()
+
+    // check if already logged in go to home page
+    const router = useRouter();
+    if (authState.loggedIn) {
+        router.replace('/');
+    }
+
+    // local state
     const [isLoading, setLoading] = useState(false)
-    const [name, setName] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [name, setName] = useState('asdasd')
+    const [email, setEmail] = useState('sadasd@asdsa')
+    const [password, setPassword] = useState('asdasdasd')
     const callApi = async () => {
         // check inputs
         if (name.length == 0 || email.length == 0 || password.length < 5) {
@@ -33,9 +47,10 @@ export default function Register() {
         });
         const content = await rawResponse.json();
 
-        console.log(content);
-
         // update application state
+        if (content != null && content!.token.length > 0) {
+            dispatch(setAuthState({ loggedIn: true, token: content.token, user: name }))
+        }
 
         // hide loading
         setLoading(false);
@@ -66,9 +81,6 @@ export default function Register() {
                     onSubmit={(e) => {
                         e.preventDefault()
                         callApi()
-                        // console.log(name);
-                        // console.log(email);
-                        // console.log(password);
                     }}
                 >
                     <input className="w-64 mb-3 rounded-full p-3 border border-solid border-gray-300 outline-none"
@@ -76,13 +88,19 @@ export default function Register() {
                             setName(e.target.value)
                         }}
                         required
-                        type='text' placeholder="Full Name"></input>
+                        type='text'
+                        placeholder="Full Name"
+                    // value={name}
+                    ></input>
                     <input className="w-64 mb-3 rounded-full p-3 border border-solid border-gray-300 outline-none"
                         onChange={(e) => {
                             setEmail(e.target.value)
                         }}
                         required
-                        type='email' placeholder="Email Address"></input>
+                        type='email'
+                        placeholder="Email Address"
+                    // value={email}
+                    ></input>
                     <input className="w-64 mb-3 rounded-full p-3 border border-solid border-gray-300 outline-none"
                         onChange={(e) => {
                             setPassword(e.target.value)
@@ -90,7 +108,10 @@ export default function Register() {
                         required
                         minLength={6}
                         maxLength={20}
-                        type='password' placeholder="Password"></input>
+                        type='password'
+                        placeholder="Password"
+                    // value={password}
+                    ></input>
                     {
                         isLoading ? <p>Loading ...</p>
                             : <input className="bg-blue-700 w-64 mb-3 rounded-full p-3 border border-solid border-gray-300 outline-none text-white text-sm cursor-pointer transition-all hover:bg-blue-900"
